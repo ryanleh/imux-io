@@ -145,17 +145,18 @@ impl<W: 'static + AsyncWrite + Unpin + Send> Clone for ThreadedWriter<W> {
     }
 }
 
-impl Drop for ThreadedReader {
-    fn drop(&mut self) {
-        // If this is the last writer still up, wait for the thread to finish
-        match Arc::get_mut(&mut self.handle) {
-            Some(h) => {
-                task::block_on(async { h.await });
-            }
-            None => {}
-        }
-    }
-}
+// TODO: There are some issues where the reader thread is not dropping
+//impl Drop for ThreadedReader {
+//    fn drop(&mut self) {
+//        // If this is the last writer still up, wait for the thread to finish
+//        match Arc::get_mut(&mut self.handle) {
+//            Some(h) => {
+//                task::block_on(async { h.await });
+//            }
+//            None => {}
+//        }
+//    }
+//}
 
 // This is an alternate writer which uses a background task + channels instead of a mutex but needs
 // improvements
